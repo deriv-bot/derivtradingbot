@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width; initial-scale=1.0"/>
+  <title>Deriv Over/Under Trading Signals</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .top-banner {
+      text-align: center;
+      margin-bottom: 20px;
+      max-width: 100%;
+      width: 100%;
+      margin-left: 0; /* Prevent clipping */
+      padding: 0; /* No padding to maximize width */
+      box-sizing: border-box;
+      overflow: visible;
+    }
+    .top-banner iframe,
+    .top-banner > div,
+    .top-banner > * {
+      max-width: 100% !important;
+      width: 100% !important;
+      height: auto !important;
+    }
+    .content-wrapper {
+      display: flex;
+      gap: 60px; /* Increased gap for larger separation */
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: flex-start; /* Aligns containers at the top */
+    }
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      margin-left: -10px; /* Shift result table left */
+    }
+    .sidebar {
+      flex: 0 0 320px; /* Increased width for larger appearance */
+      background: white;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-top: 55px; /* Aligns with #error-message */
+      margin-right: 50px; /* Increased to shift further right */
+      font-size: 1.1em; /* Larger text for sidebar content */
+    }
+    .sidebar h2 {
+      color: #333;
+      font-size: 2em; /* Larger heading */
+      margin: 0 0 15px 0;
+      text-align: left;
+      white-space: nowrap; /* Ensures title stays on one line */
+    }
+    .sidebar ol {
+      padding-left: 20px;
+      margin: 0;
+      color: #333;
+    }
+    .sidebar li {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .sidebar a {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      text-decoration: underline;
+    }
+    .chart-container {
+      flex: 0 0 320px;
+      margin-top: 20px;
+      margin-right: 50px;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+    @media (max-width: 768px) {
+      .content-wrapper {
+        flex-direction: column;
+        gap: 20px; /* Adjusted for mobile */
+      }
+      .main-content {
+        order: 1;
+        margin-left: 0; /* Reset for mobile */
+      }
+      .sidebar {
+        order: 2;
+        flex: 1;
+        margin-top: 20px; /* Adjusted for mobile view */
+        margin-right: 0; /* Reset for mobile */
+        font-size: 1em; /* Slightly smaller for mobile */
+      }
+      .sidebar h2 {
+        font-size: 1.5em; /* Adjusted for mobile */
+        white-space: normal; /* Allow wrapping on mobile */
+      }
+      .chart-container {
+        order: 3;
+        flex: 1;
+        margin-right: 0;
+        margin-top: 10px;
+      }
+      .top-banner {
+        margin-left: 0; /* Reset for mobile */
+        padding: 0;
+      }
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin: 15px 0;
+      font-size: 1.8em;
+    }
+    table {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0; /* Remove auto margin to allow left shift */
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #4CAF50;
+      color: white;
+      font-weight: bold;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f0f0f0;
+    }
+    #error-message {
+      text-align: center;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .loading {
+      color: #2196F3;
+      background-color: #e3f2fd;
+      border: 1px solid #2196F3;
+    }
+    .success {
+      color: #4CAF50;
+      background-color: #e8f5e9;
+      border: 1px solid #4CAF50;
+    }
+    .error {
+      color: #f44336;
+      background-color: #ffebee;
+      border: 1px solid #f44336;
+    }
+    .no-signals {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top banner -->
+  <div class="top-banner">
+    <script type="text/javascript" src="https://js.partnershipsprogram.com/javascript.php?prefix=TSPs6T7BOUMnX8PpKaFnGGNd7ZgqdRLk&media=3316&campaign=1"></script>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Main content area -->
+    <div class="main-content">
+      <h1>Deriv Digit Over/Under Trading Signals</h1>
+      <div id="error-message" class="loading">Connecting to Bot Server...</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Signal</th>
+            <th>Entry Tick</th>
+            <th>Exit Tick</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody id="signals-body">
+          <tr class="no-signals">
+            <td colspan="5">No signals available yet...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sidebar with instructions -->
+    <div class="sidebar">
+      <h2>How to Use Our Deriv Bot</h2>
+      <ol>
+        <li>Register for a Deriv account <a href="https://track.deriv.com/_TSPs6T7BOUP1k0YPxVS0A2Nd7ZgqdRLk/1/" target="_blank">HERE</a>.</li>
+        <li>Log in to your Deriv account and navigate to the API token management page under Settings.</li>
+        <li>Create a new API token with the necessary permissions (Read and Trade).</li>
+        <li>Copy the generated API token securely.</li>
+        <li>Send the API token to us via:
+          <ul>
+            <li>Email: <a href="mailto:ihotro247@gmail.com" target="_blank">ihotro247@gmail.com</a></li>
+            <li>WhatsApp: <a href="https://wa.me/+84862171300" target="_blank">Click to message</a></li>
+          </ul>
+        </li>
+        <li>We will configure the bot with your API token and provide further instructions.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Chart container -->
+  <div class="chart-container">
+    <canvas id="balanceChart"></canvas>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const errorMessage = document.getElementById('error-message');
+    const signalsBody = document.getElementById('signals-body');
+    let signalCount = 0;
+    let isInitialLoad = true;
+    let lastLoadedTimestamp = null;
+
+    // Chart setup
+    const ctx = document.getElementById('balanceChart').getContext('2d');
+    const balanceChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Simulated Balance ($)',
+          data: [100], // Starting balance
+          borderColor: 'rgba(75, 192, 192, 1)',
+          tension: 0.1,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    function updateStatus(message, type = 'loading') {
+      errorMessage.textContent = message;
+      errorMessage.className = type;
+    }
+
+    function formatTimestamp(timestamp) {
+      if (!timestamp) return 'N/A';
+      try {
+        const date = new Date(timestamp);
+        return date.toLocaleString();
+      } catch (e) {
+        return timestamp;
+      }
+    }
+
+    function formatTick(tick) {
+      if (!tick || tick === 'N/A') return 'N/A';
+      const numTick = parseFloat(tick);
+      return isNaN(numTick) ? tick : numTick.toFixed(2);
+    }
+
+    function addSignalRow(signal) {
+      // Remove "no signals" message if it exists
+      const noSignalsRow = signalsBody.querySelector('.no-signals');
+      if (noSignalsRow) {
+        noSignalsRow.remove();
+      }
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${formatTimestamp(signal.timestamp)}</td>
+        <td><strong>${signal.signal || 'N/A'}</strong></td>
+        <td>${formatTick(signal.entry_tick)}</td>
+        <td>${formatTick(signal.exit_tick)}</td>
+        <td>${signal.result || 'Pending'}</td>
+      `;
+      signalsBody.appendChild(row);
+      signalCount++;
+
+      updateStatus(`${signalCount} signals loaded`, 'success');
+      updateBalanceChart(signal.result);
+    }
+
+    function updateBalanceChart(result) {
+      const currentBalance = balanceChart.data.datasets[0].data[balanceChart.data.datasets[0].data.length - 1];
+      let newBalance = currentBalance;
+
+      if (result === 'WIN') {
+        newBalance += 0.4;
+      } else if (result === 'LOSS') {
+        newBalance -= 1;
+      }
+
+      balanceChart.data.labels.push(formatTimestamp(Date.now()));
+      balanceChart.data.datasets[0].data.push(newBalance);
+      balanceChart.update();
+    }
+
+    function initializeFirebase() {
+      try {
+        updateStatus('Loading Bot Server...', 'loading');
+
+        // Check if Firebase loaded
+        if (typeof firebase === 'undefined') {
+          throw new Error('Bot Server SDK failed to load');
+        }
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCcDvgMTRQk_IFO88jvSdYsmy_tJdBKFnY",
+          authDomain: "tradingbotsignals-deriv.firebaseapp.com",
+          databaseURL: "https://tradingbotsignals-deriv-default-rtdb.firebaseio.com",
+          projectId: "tradingbotsignals-deriv",
+          storageBucket: "tradingbotsignals-deriv.firebasestorage.app",
+          messagingSenderId: "920679270921",
+          appId: "1:920679270921:web:5a51b31d4214dd6fb686d8",
+          measurementId: "G-6PZ414GQSV"
+        };
+
+        updateStatus('Initializing Bot Server...', 'loading');
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const signalsRef = database.ref('signals');
+
+        updateStatus('Connecting to database...', 'loading');
+
+        // Load last 20 signals ordered by timestamp
+        signalsRef.orderByChild('timestamp').limitToLast(20).on('value', (snapshot) => {
+          if (snapshot.exists()) {
+            console.log("Database connection successful");
+
+            // Clear existing signals
+            signalsBody.innerHTML = '';
+            signalCount = 0;
+            balanceChart.data.labels = [];
+            balanceChart.data.datasets[0].data = [100]; // Reset balance to $100
+
+            // Convert to array - Firebase returns them in ascending order (oldest first)
+            const signals = [];
+            snapshot.forEach((childSnapshot) => {
+              signals.push(childSnapshot.val());
+            });
+
+            // Add signals in reverse order (newest first)
+            signals.reverse().forEach((signal) => {
+              addSignalRow(signal);
+            });
+
+            // Store the latest timestamp for real-time filtering
+            if (signals.length > 0) {
+              lastLoadedTimestamp = signals[0].timestamp;
+            }
+
+            // Mark initial load as complete
+            isInitialLoad = false;
+
+            if (signalCount === 0) {
+              signalsBody.innerHTML = '<tr class="no-signals"><td colspan="5">No signals available yet...</td></tr>';
+              updateStatus('Connected - No signals available', 'success');
+            }
+          } else {
+            console.log("No data available or database is empty");
+            isInitialLoad = false;
+            updateStatus('Connected - No signals available', 'success');
+          }
+        }, (error) => {
+          console.error("Database connection error:", error);
+          updateStatus('Database connection error: ' + error.message, 'error');
+        });
+
+        // Listen for new signals (real-time updates)
+        signalsRef.orderByChild('timestamp').on('child_added', (snapshot) => {
+          const signal = snapshot.val();
+
+          // Only process if initial load is complete and this is a new signal
+          if (!isInitialLoad && signal.timestamp && signal.timestamp > lastLoadedTimestamp) {
+            console.log("New signal received:", signal);
+
+            // Remove oldest signal if we have 20
+            const rows = signalsBody.querySelectorAll('tr:not(.no-signals)');
+            if (rows.length >= 20) {
+              rows[rows.length - 1].remove();
+              signalCount--;
+              balanceChart.data.labels.shift();
+              balanceChart.data.datasets[0].data.shift();
+            }
+
+            // Add new signal at the top
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${formatTimestamp(signal.timestamp)}</td>
+              <td><strong>${signal.signal || 'N/A'}</strong></td>
+              <td>${formatTick(signal.entry_tick)}</td>
+              <td>${formatTick(signal.exit_tick)}</td>
+              <td>${signal.result || 'Pending'}</td>
+            `;
+            signalsBody.insertBefore(row, signalsBody.firstChild);
+            signalCount++;
+
+            // Update the latest timestamp
+            lastLoadedTimestamp = signal.timestamp;
+            updateStatus(`${signalCount} signals loaded`, 'success');
+            updateBalanceChart(signal.result);
+          }
+        });
+
+        updateStatus('Connected to Bot Server', 'success');
+
+      } catch (error) {
+        console.error("Bot Server initialization error:", error);
+        updateStatus('Bot Server initialization failed: ' + error.message, 'error');
+      }
+    }
+
+    // Wait for Firebase scripts to load, then initialize
+    window.addEventListener('load', () => {
+      setTimeout(initializeFirebase, 100);
+    });
+  </script>
+</body>
+</html>
